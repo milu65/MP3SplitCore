@@ -1,83 +1,176 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
+//TODO:增加ABR帧解析
+//TODO:重构构造函数
+//TODO:类文件拆分
 public class MP3Split {
 
+    private static final String[]ABR_TEST=new String[]{"abr032.mp3","abr040.mp3","abr192.mp3"};
+    private static final String[]CBR_TEST=new String[]{"mp3-032.mp3","mp3-112.mp3","mp3-320.mp3"};
+
     public static void main(String[] args) throws IOException {
-        MP3Split ms=new MP3Split("days.mp3");
-//        ms.subsequence(0,6000);
-//        ms.subsequence(6000,10000);
-//        ms.subsequence(10000,11000);
-//        ms.subsequence(22500,25000);
+        long timer=System.currentTimeMillis();
+        File file=new File(CBR_TEST[0]);
+//        File file=new File("ring.mp3");
+        MP3Split hs=new MP3Split(file);
+//        hs.subsequence(0,11680);
+        System.out.println("time spend: "+(System.currentTimeMillis()-timer)+" ms");
+
+    }
+
+    private static class ID3V2Header{
+        public byte[] version=new byte[2];
+        public byte flags=0;
+        public long tagSize=0;
+    }
+
+    private static class ID3V1Header{
+    }
+
+    private static class FrameHead{
+        public long pos=0;
+        public long bitrate=0;
+        public int sampleRate=0;
+        public int frameLen=0;//first frame length
+        public int padding=0;
+        public String toString(){
+            return "pos: "+pos+" ,bitrate: "+bitrate+" ,sampleRate: "
+                    +sampleRate+" ,frameLen: "+frameLen+" ,padding: "+padding;
+        }
     }
 
     private static final int []BITRATE_IDX=new int[]{0,32,40,48,56,64,80,96,112,128,160,192,224,256,320,0};
-    private static final int []SAMPLERATE_IDX=new int[]{44100,48000,32000};
+    private static final int []SAMPLERATE_IDX=new int[]{44100,48000,32000,0};
 
     private long headSize=0;
-    private long bitrate=0;
-    private int sampleRate=0;
-    private long numOfFrame=0;//estimate
-    private int frameLen=0;//first frame length
-    private long duration=0;//length of the mp3
+    private long numOfFrame=0;
+    private long duration=0;//Music duration of the mp3
     private double mspf=0;//ms per frame
+    private FrameHead head=null;
+    private ArrayList<FrameHead> sequence=null;
+    private ID3V2Header v2Header=null;
+    private ID3V1Header v1Header=null;
+
     private File inputFile=null;
     private File outputDir=null;
 
-    public MP3Split(String location) throws IOException {
-        this(new File(location));
+    private ID3V2Header readID3V2Header() throws IOException {
+        FileInputStream fileInputStream=new FileInputStream(inputFile);
+        if(fileInputStream.available()<10)return null;
+        byte[]bytes=new byte[10];
+        if(fileInputStream.available()<10)throw new IOException("invalid mp3 file - size < 10 bytes");
+        int readSize=10;
+        while(readSize!=0){
+            readSize-=fileInputStream.read(bytes,10-readSize,readSize);
+        }
+
+        if(bytes[0]=='I'&&bytes[1]=='D'&&bytes[2]=='3'){
+            ID3V2Header header=new ID3V2Header();
+            header.version=Arrays.copyOfRange(bytes,3,4);
+            header.flags= bytes[5];
+            header.tagSize=bytes[6]*0x200000+bytes[7]*0x4000+bytes[8]*0x80+bytes[9];
+            return header;
+        }else{
+            return null;
+        }
     }
 
-    public MP3Split(File file) throws IOException{
+    public MP3Split(File file) throws IOException {
         inputFile=file;
         outputDir=new File(file.getAbsolutePath().replace(file.getName(),""));
+        sequence=new ArrayList<>();
 
-        FileInputStream fileInputStream=new FileInputStream(file);
-        int sign=0;
-        long len=file.length();
-        while((sign= fileInputStream.read())!=-1){//find begging sign
-            if(sign==0xFF){
-                break;
-            }else{
-                headSize++;
+        BufferedInputStream fileInputStream=new BufferedInputStream(new FileInputStream(file));
+        v2Header=readID3V2Header();
+        if(v2Header!=null){
+            headSize=v2Header.tagSize+10;
+            System.out.println("v2Header found size: "+headSize);
+            long skipSize=headSize;
+            while(skipSize!=0){
+                long skipped=fileInputStream.skip(skipSize);
+                skipSize-=skipped;
+                if(skipped==0){
+                    break;
+                }
             }
         }
 
-        if(sign==-1){
-            System.out.println("no frameHead");
-            return;
+        fileInputStream.mark(0);//TODO:重新理顺mark的相关使用
+        long lastIndex=0;
+        long index=headSize;
+        int undefinedBytesCount=0;
+        while(fileInputStream.available()!=0){
+            int sign=fileInputStream.read();
+            index++;
+            FrameHead headL=null;
+            if(sign==0xFF){
+                fileInputStream.mark(0);
+                lastIndex=index;
+                int left=fileInputStream.read();
+                int mid=fileInputStream.read();
+                int right=fileInputStream.read();
+                headL= readCBRFrameHead(sign,left,mid,right);
+                if(headL!=null){
+                    headL.pos=index-1;
+                    sequence.add(headL);
+                    System.out.println(String.format("%5d ",sequence.size())+headL+" range: "+(index-1)+"->"+(index+headL.frameLen-1));
+                    if(sequence.size()==2&&v2Header!=null){
+                        headSize=headL.pos-sequence.get(0).frameLen;
+                    }
+                    long skipSize=headL.frameLen-4;
+                    while(skipSize!=0){
+                        long skipped=fileInputStream.skip(skipSize);
+                        skipSize-=skipped;
+                        if(skipped==0){
+                            System.out.println("buffer error");
+                            break;
+                        }
+                    }
+                    index+=headL.frameLen-1-skipSize;
+                }else{
+                    if(sequence.size()!=0){
+                        sequence.remove(sequence.size()-1);
+                    }
+                    fileInputStream.reset();
+                    System.out.println("reset from " + index+" to "+lastIndex);
+                    index=lastIndex;
+                }
+            }else{
+                if(sequence.size()!=0){
+                    sequence.remove(sequence.size()-1);
+                }
+                undefinedBytesCount++;
+//                System.out.print(" skip "+Integer.toHexString(sign)+" "+(index-1));
+            }
         }
+        head=sequence.get(0);
+        numOfFrame=sequence.size();
+        duration=(long)((1152*1000.0/head.sampleRate)*numOfFrame);
+        mspf=(1152*1000.0/head.sampleRate);
 
-        if(!readFrameHead(fileInputStream)){
-            System.out.println("bad frameHead");
-            return;
-        }
-
-        if(headSize!=0)headSize--;
-        len-=headSize;
-
-        numOfFrame=len/frameLen;
-        duration=(long)((1152*1000.0/sampleRate)*numOfFrame);
-        mspf=(1152*1000.0/sampleRate);
-
+        System.out.println("num of frame: "+numOfFrame);
+        System.out.println("duration: "+duration+" ms");
+        System.out.println("undefined bytes count: "+(undefinedBytesCount-(v2Header!=null?0:headSize)));
+        System.out.println("headSize: "+headSize);
         fileInputStream.close();
-        System.out.println(this);
     }
 
-    private boolean readFrameHead(FileInputStream fis) throws IOException {
-        int left=fis.read();//head byte2
-        int mid=fis.read();//head byte3
-        int right=fis.read();//head byte4
-
-        bitrate=BITRATE_IDX[mid>>4];
-        if(bitrate==0)return false;
+    private FrameHead readCBRFrameHead(int sign, int left, int mid, int right) {
+        if(sign!=0xFF||left<0||right<0||mid<0)return null;
+        int bitrate=BITRATE_IDX[mid>>4];
+        if(bitrate==0)return null;
         bitrate*=1000;
-        sampleRate=SAMPLERATE_IDX[(0xC&mid)>>2];
+        int sampleRate=SAMPLERATE_IDX[(0xC&mid)>>2];
         int padding=(0x2&mid)>>1;
-        frameLen=(int)(144.0*bitrate/sampleRate+padding);
-        return true;
+        int frameLen=(int)(144.0*bitrate/sampleRate+padding);
+        FrameHead headL= new FrameHead();
+        headL.bitrate=bitrate;
+        headL.sampleRate=sampleRate;
+        headL.padding=padding;
+        headL.frameLen=frameLen;
+        return headL;
     }
 
     /**
@@ -91,34 +184,40 @@ public class MP3Split {
      */
     public void subsequence(long start,long end) throws IOException {
         FileInputStream fileInputStream=new FileInputStream(inputFile);
-        fileInputStream.skip(headSize);
 
-        long framesSkip=(long)(start/mspf)*frameLen;
-        long numFrame=(long)((end-start)/mspf);
+        int numFrameSkip=(int)(start/mspf);
+        int numFrame=(int)((end-start)/mspf);
+        numFrame+=1;//fill up
 
-        numFrame+=2;//fill up
+        long endByte=sequence.get(numFrameSkip+numFrame-1).pos-1;
+        long skipBytes=0;
 
-        fileInputStream.skip(framesSkip);
+        if(start!=0){
+            skipBytes=sequence.get(numFrameSkip).pos;
+        }else{
+            skipBytes=headSize;
+        }
 
-        byte[]frameBuffer =new byte[frameLen];
+        long skipSize=skipBytes;
+        while(skipSize!=0){//skip useless bytes
+            long gone=fileInputStream.skip(skipSize);
+            skipSize-=gone;
+            if(gone==0){
+                break;
+            }
+        }
+
+        byte[]frameBuffer =new byte[head.frameLen];
         FileOutputStream fileOutputStream=new FileOutputStream(
-                new File(outputDir,"subsequence-"+System.currentTimeMillis()+".mp3"));
+                new File(outputDir,inputFile.getName().replace(".mp3","")
+                        +"-subsequence"+System.currentTimeMillis()+".mp3"));
 
-        for(int i=0;i<numFrame;i++){//take numFrame frames
+        for(long i=skipBytes;i<endByte;){//take bytes from input file
             int readLen=fileInputStream.read(frameBuffer);
+            if(endByte-i<readLen)readLen=(int)(endByte-i);
             fileOutputStream.write(frameBuffer, 0, readLen);
-            if(readLen<frameBuffer.length-1)break;
+            i+=readLen;
         }
         fileOutputStream.close();
-    }
-
-    public String toString(){
-        return "fileName: "+inputFile.getAbsolutePath()+
-                "\nfileSize: "+inputFile.length()+" bytes"+
-                "\nsampleRate: "+sampleRate+
-                "\nbitRate: "+ bitrate+
-                "\nframeLen: "+ frameLen+
-                "\nnumOfFrame: "+numOfFrame+
-                "\nduration: "+duration+" ms";
     }
 }
