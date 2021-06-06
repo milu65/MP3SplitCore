@@ -13,6 +13,8 @@ public class MP3Split {
     private static final String DIR_TEST_MP3_DIR="testMp3/";
     private static final String DIR_MP3_OUTPUT="output/";
 
+    private static long outputCount=0;
+
     public static void main(String[] args) throws IOException {
         long timer=System.currentTimeMillis();
         File file=new File(DIR_TEST_MP3_DIR+CBR_TEST[0]);
@@ -20,7 +22,7 @@ public class MP3Split {
         MP3Split hs=new MP3Split(file);
         hs.subsequence(0,18000);
         hs.subsequence(18000,25000);
-        hs.subsequence(25000,37000);
+        hs.subsequence(25000,370000);
         System.out.println("time spend: "+(System.currentTimeMillis()-timer)+" ms");
 
     }
@@ -110,7 +112,7 @@ public class MP3Split {
             int sign=fileInputStream.read();
             index++;
             FrameHead headL=null;
-            if(sign==0xFF){
+            if(sign==0xFF){//TODO: else判断内容，对于废帧的处理
                 fileInputStream.mark(0);
                 lastIndex=index;
                 int left=fileInputStream.read();
@@ -143,11 +145,8 @@ public class MP3Split {
                     index=lastIndex;
                 }
             }else{
-                if(sequence.size()!=0){
-                    sequence.remove(sequence.size()-1);
-                }
                 undefinedBytesCount++;
-//                System.out.print(" skip "+Integer.toHexString(sign)+" "+(index-1));
+                System.out.print(" skip "+Integer.toHexString(sign)+" "+(index-1));
             }
         }
         head=sequence.get(0);
@@ -188,13 +187,21 @@ public class MP3Split {
      * @throws IOException
      */
     public void subsequence(long start,long end) throws IOException {
+        if(end>this.duration){
+            end=this.duration;
+        }
+        if(start<0||start>=end){
+            System.out.println("subsequence(): input(end-start) out of range");
+            return;
+        }
+
         FileInputStream fileInputStream=new FileInputStream(inputFile);
 
         int numFrameSkip=(int)(start/mspf);
         int numFrame=(int)((end-start)/mspf);
         numFrame+=1;//fill up
 
-        long endByte=sequence.get(numFrameSkip+numFrame-1).pos-1;
+        long endByte=sequence.get(numFrameSkip+numFrame-1).pos;
         long skipBytes=0;
 
         if(start!=0){
@@ -215,7 +222,8 @@ public class MP3Split {
         byte[]frameBuffer =new byte[head.frameLen];
         FileOutputStream fileOutputStream=new FileOutputStream(
                 new File(outputDir,inputFile.getName().replace(".mp3","")
-                        +"-subsequence"+System.currentTimeMillis()+".mp3"));
+                        +"-subsequence"+(outputCount++)+".mp3"));
+//                        +System.currentTimeMillis()+".mp3"));
 
         for(long i=skipBytes;i<endByte;){//take bytes from input file
             int readLen=fileInputStream.read(frameBuffer);
