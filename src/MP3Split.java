@@ -10,12 +10,17 @@ public class MP3Split {
     private static final String[]ABR_TEST=new String[]{"abr032.mp3","abr040.mp3","abr192.mp3"};
     private static final String[]CBR_TEST=new String[]{"mp3-032.mp3","mp3-112.mp3","mp3-320.mp3"};
 
+    private static final String DIR_TEST_MP3_DIR="testMp3/";
+    private static final String DIR_MP3_OUTPUT="output/";
+
     public static void main(String[] args) throws IOException {
         long timer=System.currentTimeMillis();
-        File file=new File(CBR_TEST[0]);
-//        File file=new File("ring.mp3");
+        File file=new File(DIR_TEST_MP3_DIR+CBR_TEST[0]);
+//        File file=new File(DIR_TEST_MP3_DIR+"ring.mp3");
         MP3Split hs=new MP3Split(file);
-//        hs.subsequence(0,11680);
+        hs.subsequence(0,18000);
+        hs.subsequence(18000,25000);
+        hs.subsequence(25000,37000);
         System.out.println("time spend: "+(System.currentTimeMillis()-timer)+" ms");
 
     }
@@ -79,7 +84,7 @@ public class MP3Split {
 
     public MP3Split(File file) throws IOException {
         inputFile=file;
-        outputDir=new File(file.getAbsolutePath().replace(file.getName(),""));
+        outputDir=new File(file.getAbsolutePath().replace(file.getName(),DIR_MP3_OUTPUT));
         sequence=new ArrayList<>();
 
         BufferedInputStream fileInputStream=new BufferedInputStream(new FileInputStream(file));
