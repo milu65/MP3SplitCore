@@ -1,4 +1,4 @@
-package edu.group22.Splitter;
+package com.AudioSplitter.Controller;
 
 import java.io.*;
 import javax.servlet.http.*;
