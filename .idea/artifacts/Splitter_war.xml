@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="Splitter:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>Splitter</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="Splitter-1.0-SNAPSHOT.war">
+      <element id="artifact" artifact-name="Splitter:war exploded" />
+    </root>
+  </artifact>
+</component>
