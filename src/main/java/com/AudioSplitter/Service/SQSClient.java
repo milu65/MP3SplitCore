@@ -13,11 +13,6 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 
 public class SQSClient {
-    public static void main(String[] args) throws JMSException {
-        SQSClient client=new SQSClient();
-        client.sendMessage("SQSClient test");
-        client.close();
-    }
 
     private final String QUEUE_NAME ="FinishedTasks.fifo";
 
