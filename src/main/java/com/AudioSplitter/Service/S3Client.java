@@ -16,10 +16,10 @@ public class S3Client {
     public static void main(String[] args) {
         String downloadAddr="F:\\git\\GitHub\\MP3SplitCore\\testDownload";
         String bucketName="testbucket324129384";
-        String uploadTarget="F:\\git\\GitHub\\MP3SplitCore\\testDownload\\testUpload\\objKeyName.jpg";
+        String uploadTarget="F:\\git\\GitHub\\MP3SplitCore\\testMp3\\mp3-112.mp3";
         S3Client s3=new S3Client();
-        System.out.println(s3.uploadFile(bucketName,"testUpload",uploadTarget));
-        System.out.println(s3.createPublicDownloadAddressExp24h(bucketName,"testUpload"));
+        System.out.println(s3.uploadFile(bucketName,"mp3-112.mp3",uploadTarget));
+//        System.out.println(s3.createPublicDownloadAddressExp24h(bucketName,"testUpload"));
 //        System.out.println(s3.downloadFile(bucketName,"testUpload",downloadAddr));
     }
     private AmazonS3 s3Client=null;
@@ -45,7 +45,7 @@ public class S3Client {
         if(obj==null)return null;
 
         String fileName=objectKey+"."+obj.getObjectMetadata().getContentType();
-        fileName=objectKey+".jpg";
+        fileName=objectKey;
         File outputDir=new File(targetAddress);
         if(!outputDir.exists()){
             outputDir.mkdir();
