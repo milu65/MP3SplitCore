@@ -87,10 +87,10 @@ public class S3Client {
         long expTimeMillis=Instant.now().toEpochMilli();
         expTimeMillis+=1000*60*60*24;
         Date expiration=new Date(expTimeMillis);
-        return createPub(bucketName,objectKey,expiration);
+        return createPublicDownloadAddress(bucketName,objectKey,expiration);
     }
 
-    public String createPub(String bucketName,String objectKey,Date expDate){
+    public String createPublicDownloadAddress(String bucketName, String objectKey, Date expDate){
         GeneratePresignedUrlRequest generatePresignedUrlRequest=
                 new GeneratePresignedUrlRequest(bucketName,objectKey).withMethod(HttpMethod.GET)
                         .withExpiration(expDate);

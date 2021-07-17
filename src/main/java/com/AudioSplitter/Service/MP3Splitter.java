@@ -11,7 +11,7 @@ public class MP3Splitter {
     private static final String[]ABR_TEST=new String[]{"abr032.mp3","abr040.mp3","abr192.mp3"};
     private static final String[]CBR_TEST=new String[]{"mp3-032.mp3","mp3-112.mp3","mp3-320.mp3"};
 
-    private static final String DIR_TEST_MP3_DIR="testMp3/";
+    public static final String DIR_TEST_MP3_DIR="testMp3/";
     private static final String DIR_MP3_OUTPUT="output/";
 
     private static long outputCount=0;
@@ -21,9 +21,10 @@ public class MP3Splitter {
         File file=new File(DIR_TEST_MP3_DIR+CBR_TEST[0]);
 //        File file=new File(DIR_TEST_MP3_DIR+"ring.mp3");
         MP3Splitter hs=new MP3Splitter(file);
-        hs.subsequence(0,18000);
-        hs.subsequence(18000,25000);
-        hs.subsequence(25000,370000);
+        File dir=new File(file.getAbsolutePath().replace(file.getName(),DIR_MP3_OUTPUT));
+        hs.subsequence(0,18000,dir);
+        hs.subsequence(18000,25000,dir);
+        hs.subsequence(25000,370000,dir);
         System.out.println("time spend: "+(System.currentTimeMillis()-timer)+" ms");
 
     }
@@ -62,7 +63,6 @@ public class MP3Splitter {
     private ID3V1Header v1Header=null;
 
     private File inputFile=null;
-    private File outputDir=null;
 
     private ID3V2Header readID3V2Header() throws IOException {
         FileInputStream fileInputStream=new FileInputStream(inputFile);
@@ -87,7 +87,6 @@ public class MP3Splitter {
 
     public MP3Splitter(File file) throws IOException {
         inputFile=file;
-        outputDir=new File(file.getAbsolutePath().replace(file.getName(),DIR_MP3_OUTPUT));
         sequence=new ArrayList<>();
 
         BufferedInputStream fileInputStream=new BufferedInputStream(new FileInputStream(file));
@@ -123,7 +122,7 @@ public class MP3Splitter {
                 if(headL!=null){
                     headL.pos=index-1;
                     sequence.add(headL);
-                    System.out.println(String.format("%5d ",sequence.size())+headL+" range: "+(index-1)+"->"+(index+headL.frameLen-1));
+                    //System.out.println(String.format("%5d ",sequence.size())+headL+" range: "+(index-1)+"->"+(index+headL.frameLen-1));
                     if(sequence.size()==2&&v2Header!=null){
                         headSize=headL.pos-sequence.get(0).frameLen;
                     }
@@ -187,13 +186,13 @@ public class MP3Splitter {
      * @param end end position (unit ms
      * @throws IOException
      */
-    public void subsequence(long start,long end) throws IOException {
+    public String subsequence(long start,long end,File outputDir) throws IOException {
         if(end>this.duration){
             end=this.duration;
         }
         if(start<0||start>=end){
             System.out.println("subsequence(): input(end-start) out of range");
-            return;
+            return null;
         }
 
         FileInputStream fileInputStream=new FileInputStream(inputFile);
@@ -221,9 +220,9 @@ public class MP3Splitter {
         }
 
         byte[]frameBuffer =new byte[head.frameLen];
-        FileOutputStream fileOutputStream=new FileOutputStream(
-                new File(outputDir,inputFile.getName().replace(".mp3","")
-                        +"-subsequence"+(outputCount++)+".mp3"));
+        File finalFile=new File(outputDir,inputFile.getName().replace(".mp3","")
+                +"-subsequence"+(outputCount++)+".mp3");
+        FileOutputStream fileOutputStream=new FileOutputStream(finalFile);
 //                        +System.currentTimeMillis()+".mp3"));
 
         for(long i=skipBytes;i<endByte;){//take bytes from input file
@@ -233,5 +232,6 @@ public class MP3Splitter {
             i+=readLen;
         }
         fileOutputStream.close();
+        return finalFile.getAbsolutePath();
     }
 }

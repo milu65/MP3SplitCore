@@ -8,6 +8,6 @@
 <h1><%= "This is a test page for the Mp3Splitter project" %>
 </h1>
 <br/>
-<a href="hello-servlet">Hello Servlet</a>
+<a href="hello-servlet?name=mp3-112.mp3">Hello Servlet</a>
 </body>
 </html>
