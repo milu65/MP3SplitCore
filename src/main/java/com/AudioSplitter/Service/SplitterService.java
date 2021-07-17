@@ -8,13 +8,6 @@ import java.io.File;
 import java.io.IOException;
 
 public class SplitterService {
-    public static void main(String[] args) throws IOException, JMSException {
-        SplitterService ss=new SplitterService();
-        SplitTaskObject task=new SplitTaskObject(0,"oirejfwpe"
-                ,0,6000,true
-                ,"F:\\git\\GitHub\\MP3SplitCore\\testMp3\\mp3-320.mp3");
-        ss.split(task);
-    }
 //    public final File outputDir=new File("/tmp/SplitterResult");
     public final String downloadDir="F:\\git\\GitHub\\MP3SplitCore\\testMp3\\downloaded";
     public final File outputDir=new File("F:\\git\\GitHub\\MP3SplitCore\\testMp3\\output");
