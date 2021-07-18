@@ -6,6 +6,7 @@ public class SplitTaskObject {
     private long begin;
     private long end;
     private String ref;
+    private boolean isLocalFile=true;
 
     public SplitTaskObject(long id, String userToken, long begin, long end, String ref) {
         this.id = id;
@@ -15,6 +16,13 @@ public class SplitTaskObject {
         this.ref = ref;
     }
 
+    public boolean isLocalFile() {
+        return isLocalFile;
+    }
+
+    public void setLocalFile(boolean localFile) {
+        isLocalFile = localFile;
+    }
 
     public String getRef() {
         return ref;
