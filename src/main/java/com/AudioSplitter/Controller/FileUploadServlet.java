@@ -1,8 +1,6 @@
 package com.AudioSplitter.Controller;
 
 import com.AudioSplitter.Service.MultipartContent;
-import com.AudioSplitter.Service.InstantTransferService;
-import com.AudioSplitter.Service.SplitterService;
 import com.Task.SplitTaskObject;
 import com.Task.TaskIDGenerator;
 import org.apache.commons.fileupload.FileItem;
@@ -13,11 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @WebServlet(name = "FileUploadServlet", value = "/FileUploadServlet")
 public class FileUploadServlet extends HttpServlet {
-
-
     public void init() {
     }
 
@@ -37,18 +34,18 @@ public class FileUploadServlet extends HttpServlet {
             File result=new File("C:\\Users\\millby\\Desktop\\upload",taskID+".mp3");
             target.write(result);
 
-            InstantTransferService it=new InstantTransferService();
-            it.storeFile(result);
 
             SplitTaskObject task=new SplitTaskObject(taskID//null pointer error
                     ,hu.getContent("userToken").getString("UTF-8")
                     ,Long.parseLong(hu.getContent("begin").getString("UTF-8"))
                     ,Long.parseLong(hu.getContent("end").getString("UTF-8"))
                     ,result.getAbsolutePath());
-            SplitterService ss=new SplitterService();
-            ss.split(task);
 
-            resp.getWriter().print("file upload successful. TaskID: "+taskID+"\ndownloadURL: "+ss.getDownloadURL());
+            LinkedBlockingQueue<SplitTaskObject> taskQueue
+                    =(LinkedBlockingQueue<SplitTaskObject>)req.getServletContext().getAttribute("taskQueue");
+            taskQueue.add(task);
+
+            resp.getWriter().print("file upload successful. TaskID: "+taskID);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,5 +1,6 @@
 package com.AudioSplitter.Service;
 
+import com.AudioSplitter.Context.InitContext;
 import com.AudioSplitter.Service.AWS.S3Client;
 import com.AudioSplitter.Service.AWS.SQSClient;
 import com.Task.SplitTaskObject;
@@ -8,8 +9,10 @@ import com.alibaba.fastjson.JSONObject;
 import javax.jms.JMSException;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
 
-public class SplitterService {
+public class SplitterService implements Runnable{
 //    public final File outputDir=new File("/tmp/SplitterResult");
     public final File outputDir=new File("F:\\git\\GitHub\\MP3SplitCore\\testMp3\\output");
 
@@ -17,8 +20,34 @@ public class SplitterService {
 
     private String downloadURL="";
 
-    public void SplitterService(){
+    private LinkedBlockingQueue<SplitTaskObject> queue;
 
+    public SplitterService(LinkedBlockingQueue<SplitTaskObject> q){
+        this.queue=q;
+    }
+
+    @Override
+    public void run() {
+        while(true){
+            try {
+                SplitTaskObject task=queue.take();
+                InstantTransferService it=new InstantTransferService();
+                if(task.isLocalFile()){
+                    it.storeFile(new File(task.getRef()));
+                }else{
+                    task.setRef(it.hashToFile(task.getRef()));
+                }
+                split(task);
+                if(InitContext.servletContext!=null){
+                    Map<String,String> resultMap
+                            =(Map<String,String>)InitContext.servletContext.getAttribute("resultMap");
+                    resultMap.put(String.valueOf(task.getId()),getDownloadURL());
+                    System.out.println(resultMap);
+                }
+            } catch (InterruptedException | JMSException | IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void split(SplitTaskObject task) throws IOException, JMSException {
@@ -59,4 +88,5 @@ public class SplitterService {
     public String getDownloadURL(){
         return downloadURL;
     }
+
 }

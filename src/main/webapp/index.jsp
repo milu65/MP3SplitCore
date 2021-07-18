@@ -29,5 +29,10 @@
     <input type="file" name="mp3">
     <input type="submit">
 </form>
+<form action="${pageContext.request.contextPath}/GetTaskResultServlet" enctype="text/plain" method="get">
+    <label>search task result</label>
+    <input type="text" name="taskID" value="">
+    <input type="submit">
+</form>
 </body>
 </html>

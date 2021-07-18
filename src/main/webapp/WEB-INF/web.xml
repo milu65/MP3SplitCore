@@ -9,6 +9,9 @@
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
 
+    <listener>
+        <listener-class>com.AudioSplitter.Context.InitContext</listener-class>
+    </listener>
 
     <servlet>
         <description></description>
