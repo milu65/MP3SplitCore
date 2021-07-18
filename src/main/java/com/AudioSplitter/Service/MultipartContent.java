@@ -12,12 +12,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HTTPUpload {
+public class MultipartContent {
 
     private Map<String,FileItem> content=new HashMap<>();
 
     public final static String userUploadDir="C:\\Users\\millby\\Desktop\\upload";
-    public HTTPUpload(HttpServletRequest req) throws FileUploadException, UnsupportedEncodingException {
+    public MultipartContent(HttpServletRequest req) throws FileUploadException, UnsupportedEncodingException {
         if(ServletFileUpload.isMultipartContent(req)){
             ServletFileUpload upload=new ServletFileUpload(new DiskFileItemFactory(10240,new File(userUploadDir)));
             List<FileItem> fileItems= upload.parseRequest(req);

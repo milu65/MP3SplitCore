@@ -1,4 +1,4 @@
-package com.AudioSplitter.Service;
+package com.AudioSplitter.Service.AWS;
 
 import com.Credentials.MyCredentials;
 import com.amazon.sqs.javamessaging.ProviderConfiguration;

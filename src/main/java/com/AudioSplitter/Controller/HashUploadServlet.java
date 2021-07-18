@@ -1,6 +1,6 @@
 package com.AudioSplitter.Controller;
 
-import com.AudioSplitter.Service.InstantTransfer;
+import com.AudioSplitter.Service.InstantTransferService;
 import com.AudioSplitter.Service.SplitterService;
 import com.Task.SplitTaskObject;
 import com.Task.TaskIDGenerator;
@@ -21,7 +21,7 @@ public class HashUploadServlet extends HttpServlet {
         String hash=req.getParameter("hash");
         long taskID= TaskIDGenerator.generate();
         taskID=System.currentTimeMillis();
-        InstantTransfer it=new InstantTransfer();
+        InstantTransferService it=new InstantTransferService();
         String dir=it.hashToFile(hash);
         SplitTaskObject task=new SplitTaskObject(taskID
                 ,req.getParameter("userToken")

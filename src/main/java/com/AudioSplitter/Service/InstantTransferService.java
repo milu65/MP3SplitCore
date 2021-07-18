@@ -1,10 +1,10 @@
 package com.AudioSplitter.Service;
 
-import com.Task.SplitTaskObject;
+import com.AudioSplitter.Service.AWS.S3Client;
 
 import java.io.File;
 
-public class InstantTransfer {
+public class InstantTransferService {
 
     private final String downloadDir="F:\\git\\GitHub\\MP3SplitCore\\testMp3\\downloaded";
 

@@ -1,5 +1,7 @@
 package com.AudioSplitter.Service;
 
+import com.AudioSplitter.Service.AWS.S3Client;
+import com.AudioSplitter.Service.AWS.SQSClient;
 import com.Task.SplitTaskObject;
 import com.alibaba.fastjson.JSONObject;
 

@@ -1,12 +1,11 @@
 package com.AudioSplitter.Controller;
 
-import com.AudioSplitter.Service.HTTPUpload;
-import com.AudioSplitter.Service.InstantTransfer;
+import com.AudioSplitter.Service.MultipartContent;
+import com.AudioSplitter.Service.InstantTransferService;
 import com.AudioSplitter.Service.SplitterService;
 import com.Task.SplitTaskObject;
 import com.Task.TaskIDGenerator;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 @WebServlet(name = "FileUploadServlet", value = "/FileUploadServlet")
 public class FileUploadServlet extends HttpServlet {
@@ -26,7 +24,7 @@ public class FileUploadServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) {
         try {
-            HTTPUpload hu = new HTTPUpload(req);
+            MultipartContent hu = new MultipartContent(req);
             resp.setContentType("text/json");
             FileItem target=hu.getContent("mp3");
             if(target==null){
@@ -39,7 +37,7 @@ public class FileUploadServlet extends HttpServlet {
             File result=new File("C:\\Users\\millby\\Desktop\\upload",taskID+".mp3");
             target.write(result);
 
-            InstantTransfer it=new InstantTransfer();
+            InstantTransferService it=new InstantTransferService();
             it.storeFile(result);
 
             SplitTaskObject task=new SplitTaskObject(taskID//null pointer error
