@@ -13,6 +13,7 @@ import java.time.Instant;
 import java.util.Date;
 
 public class S3Client {
+    public final static String DEFAULT_BUCKET_NAME="testbucket324129384";
 
     private AmazonS3 s3Client=null;
 
@@ -23,7 +24,7 @@ public class S3Client {
                     .build();
     }
 
-    private boolean doesObjectExist(String bucketName,String objectKey){
+    public boolean doesObjectExist(String bucketName,String objectKey){
         return s3Client.doesObjectExist(bucketName,objectKey);
     }
 

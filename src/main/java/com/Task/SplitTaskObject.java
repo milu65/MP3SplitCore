@@ -1,29 +1,20 @@
 package com.Task;
 
 public class SplitTaskObject {
-    private int id;
+    private long id;
     private String userToken;
     private long begin;
     private long end;
-    private boolean isLocalFile;
     private String ref;
 
-    public SplitTaskObject(int id, String userToken, long begin, long end, boolean isLocalFile, String ref) {
+    public SplitTaskObject(long id, String userToken, long begin, long end, String ref) {
         this.id = id;
         this.userToken = userToken;
         this.begin = begin;
         this.end = end;
-        this.isLocalFile = isLocalFile;
         this.ref = ref;
     }
 
-    public boolean isLocalFile() {
-        return isLocalFile;
-    }
-
-    public void setLocalFile(boolean localFile) {
-        this.isLocalFile = localFile;
-    }
 
     public String getRef() {
         return ref;
@@ -33,7 +24,7 @@ public class SplitTaskObject {
         this.ref = ref;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -49,7 +40,7 @@ public class SplitTaskObject {
         this.end = end;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
