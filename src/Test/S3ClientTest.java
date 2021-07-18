@@ -1,4 +1,4 @@
-import com.AudioSplitter.Service.S3Client;
+import com.AudioSplitter.Service.AWS.S3Client;
 
 public class S3ClientTest {
     public static void main(String[] args) {

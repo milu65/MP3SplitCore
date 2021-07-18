@@ -1,4 +1,4 @@
-import com.AudioSplitter.Service.SQSClient;
+import com.AudioSplitter.Service.AWS.SQSClient;
 
 import javax.jms.JMSException;
 
