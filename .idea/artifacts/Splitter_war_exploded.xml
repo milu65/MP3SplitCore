@@ -32,6 +32,8 @@
           <element id="library" level="project" name="Maven: joda-time:joda-time:2.8.1" />
           <element id="library" level="project" name="Maven: com.amazonaws:jmespath-java:1.11.506" />
           <element id="library" level="project" name="Maven: com.alibaba:fastjson:1.2.76" />
+          <element id="library" level="project" name="Maven: commons-fileupload:commons-fileupload:1.4" />
+          <element id="library" level="project" name="Maven: commons-io:commons-io:2.2" />
         </element>
       </element>
       <element id="directory" name="META-INF">
