@@ -1,4 +1,4 @@
-package com.Task;
+package com.AudioSplitter.Task;
 
 public class SplitTaskObject {
     private long id;

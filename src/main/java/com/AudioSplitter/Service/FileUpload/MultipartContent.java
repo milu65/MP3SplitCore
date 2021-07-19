@@ -1,4 +1,4 @@
-package com.AudioSplitter.Service;
+package com.AudioSplitter.Service.FileUpload;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;

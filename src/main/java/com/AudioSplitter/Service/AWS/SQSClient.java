@@ -1,6 +1,6 @@
 package com.AudioSplitter.Service.AWS;
 
-import com.Credentials.MyCredentials;
+import com.AudioSplitter.Credentials.MyCredentials;
 import com.amazon.sqs.javamessaging.ProviderConfiguration;
 import com.amazon.sqs.javamessaging.SQSConnection;
 import com.amazon.sqs.javamessaging.SQSConnectionFactory;

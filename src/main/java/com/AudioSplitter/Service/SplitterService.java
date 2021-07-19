@@ -3,7 +3,7 @@ package com.AudioSplitter.Service;
 import com.AudioSplitter.Context.InitContext;
 import com.AudioSplitter.Service.AWS.S3Client;
 import com.AudioSplitter.Service.AWS.SQSClient;
-import com.Task.SplitTaskObject;
+import com.AudioSplitter.Task.SplitTaskObject;
 import com.alibaba.fastjson.JSONObject;
 
 import javax.jms.JMSException;

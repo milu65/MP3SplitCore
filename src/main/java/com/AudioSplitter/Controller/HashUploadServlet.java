@@ -1,8 +1,8 @@
 package com.AudioSplitter.Controller;
 
 import com.AudioSplitter.Service.InstantTransferService;
-import com.Task.SplitTaskObject;
-import com.Task.TaskIDGenerator;
+import com.AudioSplitter.Task.SplitTaskObject;
+import com.AudioSplitter.Task.TaskIDGenerator;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

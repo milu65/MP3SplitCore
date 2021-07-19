@@ -1,5 +1,5 @@
 import com.AudioSplitter.Service.SplitterService;
-import com.Task.SplitTaskObject;
+import com.AudioSplitter.Task.SplitTaskObject;
 
 import javax.jms.JMSException;
 import java.io.IOException;
