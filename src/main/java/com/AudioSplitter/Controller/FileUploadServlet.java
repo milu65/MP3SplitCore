@@ -1,6 +1,6 @@
 package com.AudioSplitter.Controller;
 
-import com.AudioSplitter.Service.FileUpload.MultipartContent;
+import com.AudioSplitter.Service.MultipartContent;
 import com.AudioSplitter.Task.SplitTaskObject;
 import com.AudioSplitter.Task.TaskIDGenerator;
 import org.apache.commons.fileupload.FileItem;
