@@ -1,5 +1,5 @@
 package com.AudioSplitter.Service.AWS;
-import com.Credentials.MyCredentials;
+import com.AudioSplitter.Credentials.MyCredentials;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.regions.Regions;

@@ -1,7 +1,7 @@
 package com.AudioSplitter.Context;
 
 import com.AudioSplitter.Service.SplitterService;
-import com.Task.SplitTaskObject;
+import com.AudioSplitter.Task.SplitTaskObject;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;

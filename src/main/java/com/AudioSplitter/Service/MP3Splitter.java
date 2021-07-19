@@ -130,7 +130,7 @@ public class MP3Splitter {
                 System.out.print(" skip "+Integer.toHexString(sign)+" "+(index-1));
             }
         }
-        head=sequence.get(0);
+        head=sequence.get(0);//OOR error
         numOfFrame=sequence.size();
         duration=(long)((1152*1000.0/head.sampleRate)*numOfFrame);
         mspf=(1152*1000.0/head.sampleRate);
