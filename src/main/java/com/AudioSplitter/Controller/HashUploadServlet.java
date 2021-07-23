@@ -1,8 +1,10 @@
 package com.AudioSplitter.Controller;
 
+import com.AudioSplitter.Service.AWS.S3Client;
 import com.AudioSplitter.Service.InstantTransferService;
 import com.AudioSplitter.Task.SplitTaskObject;
 import com.AudioSplitter.Task.TaskIDGenerator;
+import com.alibaba.fastjson.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,21 +22,30 @@ public class HashUploadServlet extends HttpServlet {
         String hash=req.getParameter("hash");
         long taskID= TaskIDGenerator.generate();
         taskID=System.currentTimeMillis();
+        JSONObject responseJson=new JSONObject();
 
-        InstantTransferService it=new InstantTransferService();
-        String dir=it.hashToFile(hash);
+
+        System.out.println("finding hash: "+hash+".mp3");
+        if(!S3Client.doesObjectExist(S3Client.DEFAULT_BUCKET_NAME,hash+".mp3")){
+            responseJson.put("state","failed");
+            resp.getWriter().print(responseJson.toJSONString());
+            return;
+        }
 
         SplitTaskObject task=new SplitTaskObject(taskID
                 ,req.getParameter("userToken")
                 ,Long.parseLong(req.getParameter("begin"))
                 ,Long.parseLong(req.getParameter("end"))
-                ,hash);
+                ,hash
+                ,false);
 
 
         LinkedBlockingQueue<SplitTaskObject> taskQueue
                 =(LinkedBlockingQueue<SplitTaskObject>)req.getServletContext().getAttribute("taskQueue");
         taskQueue.add(task);
 
-        resp.getWriter().print("file upload successful. TaskID: "+taskID);
+        responseJson.put("state","succeeded");
+        responseJson.put("id",taskID);
+        resp.getWriter().print(responseJson.toJSONString());
     }
 }

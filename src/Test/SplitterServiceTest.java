@@ -10,7 +10,7 @@ public class SplitterServiceTest {
         SplitterService ss=new SplitterService(null);
         SplitTaskObject localFileTask=new SplitTaskObject(0,"oirejfwpe"
                 ,0,6000
-                ,"F:\\git\\GitHub\\MP3SplitCore\\testMp3\\mp3-320.mp3");
+                ,"F:\\git\\GitHub\\MP3SplitCore\\testMp3\\mp3-320.mp3",true);
         ss.split(localFileTask);
     }
 }

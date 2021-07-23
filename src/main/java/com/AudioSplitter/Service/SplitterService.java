@@ -31,6 +31,7 @@ public class SplitterService implements Runnable{
         while(true){
             try {
                 SplitTaskObject task=queue.take();
+                System.out.println(task);
                 InstantTransferService it=new InstantTransferService();
                 if(task.isLocalFile()){
                     it.storeFile(new File(task.getRef()));
@@ -42,7 +43,6 @@ public class SplitterService implements Runnable{
                     Map<String,String> resultMap
                             =(Map<String,String>)InitContext.servletContext.getAttribute("resultMap");
                     resultMap.put(String.valueOf(task.getId()),getDownloadURL());
-                    System.out.println(resultMap);
                 }
             } catch (InterruptedException | JMSException | IOException e) {
                 e.printStackTrace();
@@ -68,10 +68,9 @@ public class SplitterService implements Runnable{
     }
 
     private String storeResultFileAndCreateDownloadURL(SplitTaskObject task,String resultFile){
-        S3Client s3=new S3Client();
         String fileName=task.getId()+".mp3";
-        s3.uploadFile(bucketName,fileName,resultFile);
-        this.downloadURL=s3.createPublicDownloadAddressExp24h(bucketName,fileName);
+        S3Client.uploadFile(bucketName,fileName,resultFile);
+        this.downloadURL=S3Client.createPublicDownloadAddressExp24h(bucketName,fileName);
         return this.downloadURL;
     }
 

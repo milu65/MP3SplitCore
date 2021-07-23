@@ -8,12 +8,13 @@ public class SplitTaskObject {
     private String ref;
     private boolean isLocalFile=true;
 
-    public SplitTaskObject(long id, String userToken, long begin, long end, String ref) {
+    public SplitTaskObject(long id, String userToken, long begin, long end, String ref, boolean isLocalFile) {
         this.id = id;
         this.userToken = userToken;
         this.begin = begin;
         this.end = end;
         this.ref = ref;
+        this.isLocalFile = isLocalFile;
     }
 
     public boolean isLocalFile() {
@@ -62,5 +63,17 @@ public class SplitTaskObject {
 
     public long getEnd() {
         return end;
+    }
+
+    @Override
+    public String toString() {
+        return "SplitTaskObject{" +
+                "id=" + id +
+                ", userToken='" + userToken + '\'' +
+                ", begin=" + begin +
+                ", end=" + end +
+                ", ref='" + ref + '\'' +
+                ", isLocalFile=" + isLocalFile +
+                '}';
     }
 }
