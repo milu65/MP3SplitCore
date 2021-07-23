@@ -15,25 +15,25 @@ import java.util.Date;
 public class S3Client {
     public final static String DEFAULT_BUCKET_NAME="testbucket324129384";
 
-    private AmazonS3 s3Client=null;
+    private static AmazonS3 s3Client=null;
 
-    public S3Client()throws AmazonS3Exception,AmazonServiceException{
+    static{
         s3Client=AmazonS3ClientBuilder.standard()
-                    .withCredentials(new MyCredentials())
-                    .withRegion(Regions.US_EAST_1)
-                    .build();
+                .withCredentials(new MyCredentials())
+                .withRegion(Regions.US_EAST_1)
+                .build();
     }
 
-    public boolean doesObjectExist(String bucketName,String objectKey){
+    public static boolean doesObjectExist(String bucketName,String objectKey){
         return s3Client.doesObjectExist(bucketName,objectKey);
     }
 
-    private S3Object getObject(String bucketName,String objectKey){
+    private static S3Object getObject(String bucketName,String objectKey){
         if(!doesObjectExist(bucketName,objectKey))return null;
         return s3Client.getObject(new GetObjectRequest(bucketName,objectKey));
     }
 
-    public String downloadFile(String bucketName,String objectKey,String targetAddress){
+    public static String downloadFile(String bucketName,String objectKey,String targetAddress){
         S3Object obj=getObject(bucketName,objectKey);
         if(obj==null)return null;
 
@@ -64,7 +64,7 @@ public class S3Client {
         return outputFile.getAbsolutePath();
     }
 
-    public boolean uploadFile(String bucketName,String objectKey,String targetAddress){
+    public static boolean uploadFile(String bucketName,String objectKey,String targetAddress){
         File target=new File(targetAddress);
         if(!target.exists())return false;
         PutObjectRequest request=new PutObjectRequest(bucketName,objectKey,target);
@@ -76,14 +76,14 @@ public class S3Client {
         return true;
     }
 
-    public String createPublicDownloadAddressExp24h(String bucketName,String objectKey){
+    public static String createPublicDownloadAddressExp24h(String bucketName,String objectKey){
         long expTimeMillis=Instant.now().toEpochMilli();
         expTimeMillis+=1000*60*60*24;
         Date expiration=new Date(expTimeMillis);
         return createPublicDownloadAddress(bucketName,objectKey,expiration);
     }
 
-    public String createPublicDownloadAddress(String bucketName, String objectKey, Date expDate){
+    public static String createPublicDownloadAddress(String bucketName, String objectKey, Date expDate){
         GeneratePresignedUrlRequest generatePresignedUrlRequest=
                 new GeneratePresignedUrlRequest(bucketName,objectKey).withMethod(HttpMethod.GET)
                         .withExpiration(expDate);
