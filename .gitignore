@@ -1,3 +1,12 @@
 testMp3
+
 target
 !target/Splitter
+
+#test jsp only
+webapp
+!webapp/WEB-INF
+!webapp/index.jsp
+
+#Credentials
+src/main/java/com/AudioSplitter/Service/AWS/Credentials

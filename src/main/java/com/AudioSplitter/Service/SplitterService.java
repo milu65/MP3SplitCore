@@ -14,7 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class SplitterService implements Runnable{
 //    public final File outputDir=new File("/tmp/SplitterResult");
-    public final File outputDir=new File("F:\\git\\GitHub\\MP3SplitCore\\testMp3\\output");
+    public final File outputDir=new File("/tmp/mp3Splitter/output");
 
     private final String bucketName="testbucket324129384";
 
@@ -24,6 +24,9 @@ public class SplitterService implements Runnable{
 
     public SplitterService(LinkedBlockingQueue<SplitTaskObject> q){
         this.queue=q;
+        if(!outputDir.exists()){
+            outputDir.mkdirs();
+        }
     }
 
     @Override

@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class InstantTransferService {
 
-    private final String downloadDir="F:\\git\\GitHub\\MP3SplitCore\\testMp3\\downloaded";
+    private final String downloadDir="/tmp/mp3Splitter/downloaded";
 
     private static final String[] hexDigits = {"0", "1", "2", "3", "4", "5","6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};
 
