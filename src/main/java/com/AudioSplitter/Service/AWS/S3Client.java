@@ -41,9 +41,9 @@ public class S3Client {
         fileName=objectKey;
         File outputDir=new File(targetAddress);
         if(!outputDir.exists()){
-            outputDir.mkdir();
+            outputDir.mkdirs();
         }
-        File outputFile=new File(targetAddress,fileName);
+        File outputFile=new File(outputDir,fileName);
 
         InputStream is=obj.getObjectContent();
         OutputStream os=null;

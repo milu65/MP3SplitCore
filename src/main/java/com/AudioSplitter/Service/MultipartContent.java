@@ -16,10 +16,14 @@ public class MultipartContent {
 
     private Map<String,FileItem> content=new HashMap<>();
 
-    public final static String userUploadDir="C:\\Users\\millby\\Desktop\\upload";
+    public final static String userUploadDir="/tmp/mp3Splitter/upload";
     public MultipartContent(HttpServletRequest req) throws FileUploadException, UnsupportedEncodingException {
+        File uploadDir=new File(userUploadDir);
+        if(!uploadDir.exists()){
+            uploadDir.mkdirs();
+        }
         if(ServletFileUpload.isMultipartContent(req)){
-            ServletFileUpload upload=new ServletFileUpload(new DiskFileItemFactory(10240,new File(userUploadDir)));
+            ServletFileUpload upload=new ServletFileUpload(new DiskFileItemFactory(10240,uploadDir));
             List<FileItem> fileItems= upload.parseRequest(req);
             for(FileItem item:fileItems){
                 content.put(item.getFieldName(),item);

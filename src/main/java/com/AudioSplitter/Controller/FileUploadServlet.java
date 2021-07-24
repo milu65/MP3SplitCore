@@ -31,7 +31,7 @@ public class FileUploadServlet extends HttpServlet {
 
             long taskID=TaskIDGenerator.generate();
             taskID=System.currentTimeMillis();
-            File result=new File("C:\\Users\\millby\\Desktop\\upload",taskID+".mp3");
+            File result=new File("/tmp/mp3Splitter/upload",taskID+".mp3");
             target.write(result);
 
 
