@@ -3,4 +3,25 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
+    <display-name>JavaWebProject</display-name>
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+    <listener>
+        <listener-class>com.AudioSplitter.Context.InitContext</listener-class>
+    </listener>
+
+    <servlet>
+        <description></description>
+        <display-name>uploadMP3</display-name>
+        <servlet-name>uploadMP3</servlet-name>
+        <servlet-class>com.AudioSplitter.Controller.FileUploadServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>uploadMP3</servlet-name>
+        <url-pattern>/uploadMP3</url-pattern>
+    </servlet-mapping>
 </web-app>
